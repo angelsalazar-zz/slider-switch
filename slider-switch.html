@@ -1,0 +1,65 @@
+<link rel="import" href="../polymer/polymer.html">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-rc1/jquery.min.js"></script>
+<dom-module id="slider-switch">
+   <template>
+     <style>
+         :host {
+             display: block;
+         }
+         .switch{
+             position: relative;
+             stroke: black;
+             stroke-width: 2;
+             fill: white;
+             padding:1px;
+             margin-left: -1.3%;
+         }
+    </style>
+    <template is="dom-if" if="{{!up}}">
+        <svg height="10" width="10" class="switch" on-track="handleTrack">
+            <polygon points="1,1 9,1 5,9" />
+        </svg>
+    </template>
+    <template is="dom-if" if="{{up}}">
+        <svg height="10" width="10" class="switch" on-track="handleTrack">
+            <polygon points="1,9 9,9 5,1" />
+        </svg>
+    </template>
+  </template>
+   <script>
+       Polymer({
+           is: 'slider-switch',
+           properties:{
+               up:{
+                   type: Boolean,
+                   value: false
+               },
+               pos:{
+                   type: Number,
+                   value: 0,
+                   notify: true
+               }
+           },
+           ready:function (){
+               console.log("ready to rock");
+           },
+           observers:[
+               'posChanged(pos)'
+           ],
+           posChanged:function(pos){
+               console.log('current Position : ' + pos);
+           },
+           handleTrack: function(e){
+               this._moveSlider(e);
+           },
+           _moveSlider:function(e){
+               var elementPos = $(e.currentTarget).parent().offset();
+               var posX = e.detail.x - elementPos.left;
+               if(posX >= 0 && posX <= $(e.currentTarget).parent().width()){
+                   $(e.currentTarget).css('left', posX+'px');
+                   this.pos = posX;
+               }
+           }
+       });
+  </script>
+</dom-module>
