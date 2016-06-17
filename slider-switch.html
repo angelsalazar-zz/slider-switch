@@ -59,17 +59,17 @@
                },
 
            },
-           handleTrack: function(e){
-               this._moveSlider(e);
-           },
-           _moveSlider:function(e){
-               var elementPos = $(e.currentTarget).parent().offset();
-               var posX = e.detail.x - elementPos.left;
-               if(posX >= 0 && posX <= $(e.currentTarget).parent().width()){
-                   $(e.currentTarget).css('left', posX+'px');
-                   this.pos = posX;
-               }
-           },
+          //  handleTrack: function(e){
+          //      this._moveSlider(e);
+          //  },
+          //  _moveSlider:function(e){
+          //      var elementPos = $(e.currentTarget).parent().offset();
+          //      var posX = e.detail.x - elementPos.left;
+          //      if(posX >= 0 && posX <= $(e.currentTarget).parent().width()){
+          //          $(e.currentTarget).css('left', posX+'px');
+          //          this.pos = posX;
+          //      }
+          //  },
            _upChanged:function(newUp){
                if(newUp)
                    this.points = "1,9 9,9 5,1";
