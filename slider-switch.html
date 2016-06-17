@@ -37,6 +37,9 @@
            listeners: {
              tap: 'handleTap'
            },
+           setPosition : function(pos){
+             this.pos = pos;
+           },
            properties:{
                up:{
                    type: Boolean,
@@ -57,7 +60,6 @@
                  reflectToAttribute: true,
                  observer: '_isSelectedChanged'
                },
-
            },
           //  handleTrack: function(e){
           //      this._moveSlider(e);
