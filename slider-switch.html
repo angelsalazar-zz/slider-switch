@@ -1,5 +1,5 @@
 <link rel="import" href="../polymer/polymer.html">
-
+<link rel="import" href="highlight-behavior.html">
 
 <dom-module id="slider-switch">
    <template>
@@ -20,6 +20,11 @@
              stroke: #1565C0;
              fill: #1565C0;
          }
+
+         .highlighted {
+           stroke: #FF9800;
+           fill: #FF9800;
+         }
     </style>
     <svg class="switch" style$="left:{{pos}}px" on-track="handleTrack">
         <polygon points$="{{points}}" />
@@ -28,6 +33,7 @@
    <script>
        Polymer({
            is: 'slider-switch',
+           behaviors: [HighlightBehavior],
            properties:{
                up:{
                    type: Boolean,
