@@ -33,7 +33,10 @@
    <script>
        Polymer({
            is: 'slider-switch',
-           behaviors: [HighlightBehavior],
+          //  behaviors: [HighlightBehavior],
+           listeners: {
+             tap: 'handleTap'
+           },
            properties:{
                up:{
                    type: Boolean,
@@ -47,12 +50,14 @@
                     type: String,
                    value: "1,1 9,1 5,9"
                },//
-               isHighlighted: {
+               isSelected: {
                  type: Boolean,
                  value: false,
                  notify: true,
-                 reflectToAttribute: true
-               }
+                 reflectToAttribute: true,
+                 observer: '_isSelectedChanged'
+               },
+
            },
            handleTrack: function(e){
                this._moveSlider(e);
@@ -69,6 +74,12 @@
                if(newUp)
                    this.points = "1,9 9,9 5,1";
 
+           },
+           handleTap : function(e){
+             this.isSelected = !this.isSelected;
+           },
+           _isSelectedChanged : function () {
+             $(this.$$('.switch')).toggleClass("highlighted");
            }
        });
   </script>
