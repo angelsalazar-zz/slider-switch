@@ -26,6 +26,7 @@
       _highlightChanged: function(value) {
         $(this.$$('.switch')).toggleClass("highlighted");
         // .toggleClass('highlighted', value);
+        this.isHighlighted = value;
       }
 
     };
