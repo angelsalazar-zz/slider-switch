@@ -23,7 +23,7 @@
       },
 
       _highlightChanged: function(value) {
-        console.log(this.$$('.switch'));
+        $(this.$$('.switch')).toggleClass("highlighted");
         // .toggleClass('highlighted', value);
       }
 
