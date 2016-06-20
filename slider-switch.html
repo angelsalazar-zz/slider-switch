@@ -60,9 +60,14 @@
                  reflectToAttribute: true,
                  observer: '_isSelectedChanged'
                },
-               isBottomSwitch:{
+               isBottom:{
                  type:Boolean,
-                 value:false
+                 value:false,
+                 reflectToAttribute: true
+               },
+               isTrackSource:{
+                 type: Boolean,
+                 value: false
                }
            },
           //  handleTrack: function(e){
@@ -82,13 +87,13 @@
 
            },
            handleTap : function(e){
-             this.isSelected = !this.isSelected;
+             if (!this.isBottom){
+                this.isSelected = !this.isSelected;
+             }
            },
            _isSelectedChanged : function () {
              var _switch = this.$$('.switch');
-             if(!_switch.isBottomSwitch){
-               $(_switch).toggleClass("highlighted");
-             }
+            $(_switch).toggleClass("highlighted");
            }
        });
   </script>
