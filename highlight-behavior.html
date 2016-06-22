@@ -1,33 +1,45 @@
 <script>
     HighlightBehavior = {
-
-      properties: {
-        isHighlighted: {
-          type: Boolean,
-          value: false,
-          notify: true,
-          observer: '_highlightChanged',
-          reflectToAttribute: true
-        }
-      },
-
-      listeners: {
-        click: '_toggleHighlight'
-      },
-
-      created: function() {
-        console.log('Highlighting for ', this, 'enabled!');
-      },
-
-      _toggleHighlight: function() {
-        this.isHighlighted = !this.isHighlighted;
-      },
-
-      _highlightChanged: function(value) {
-        $(this.$$('.switch')).toggleClass("highlighted");
-        // .toggleClass('highlighted', value);
-        this.isHighlighted = value;
-      }
-
+        properties: {
+            class:{
+                type: String,
+                value: ''
+            },
+            up:{
+                type: Boolean,
+                observer: '_upChanged'
+            },
+            points: {
+                type: String,
+                value: "1,1 9,1 5,9"
+            }
+        },
+        listeners: {
+            mousedown: '_handleSelected'
+        },
+        _handleSelected:function(e){
+            if(this.isSelected){
+                if(e.ctrlKey){
+                    this.isSelected = false;
+                    this.class = '';
+                }
+            }else{
+                if(!e.ctrlKey){
+                    var _children = Polymer.dom(Polymer.dom(this).parentNode).querySelectorAll("slider-switch");
+                    for (var i = 0; i < _children.length; i++) {
+                        if( _children[i].isSelected === true){
+                            _children[i].isSelected = false;
+                            _children[i].class = '';
+                        }
+                  }
+                }
+                this.isSelected = true;
+                this.class = 'highlighted';
+            }      
+        },
+        _upChanged:function(isUp){
+            if(isUp)
+                this.points = "1,9 9,9 5,1";
+        },
     };
 </script>
