@@ -25,76 +25,101 @@
            stroke: #FF9800;
            fill: #FF9800;
          }
+
+         .highlighted:hover {
+           stroke: #B71C1C;
+           fill: #B71C1C;
+         }
+
+         .value {
+           position: absolute;
+           background-color: #7CADAD;
+           color: #EEEEEE;
+           padding: 3px;
+           width: auto;
+           height: auto;
+           margin-left: -12px;
+           font: 11px arial, sans-serif;
+           border: .5px solid;
+           border-radius: 10px;
+         }
     </style>
-    <svg class="switch" style$="left:{{pos}}px">
+    <div class="value" style$="left:{{position}}px; display:{{visibility}}; top:{{topPos}}px">{{position}}</div>
+    <svg class$="switch {{class}}" style$="left:{{position}}px">
         <polygon points$="{{points}}" />
     </svg>
   </template>
    <script>
        Polymer({
            is: 'slider-switch',
-          //  behaviors: [HighlightBehavior],
+           behaviors: [HighlightBehavior],
            listeners: {
-             tap: 'handleTap'
-           },
-           setPosition : function(pos){
-             this.pos = pos;
+               down: '_handleDown'
            },
            properties:{
-               up:{
-                   type: Boolean,
-                   observer: '_upChanged'
+               position: {
+                   type: Number,
+                   value: 0,
+                   reflectToAttribute: true
                },
-               pos:{
+               isDragging: {
+                    type: Boolean,
+                    value: false,
+                    reflectToAttribute: true
+                },
+               isSelected: {
+                   type: Boolean,
+                   value: false,
+                   reflectToAttribute: true
+               },
+               _startX:{
                    type: Number,
                    value: 0
                },
-               points: {
-                    type: String,
-                   value: "1,1 9,1 5,9"
-               },//
-               isSelected: {
-                 type: Boolean,
-                 value: false,
-                 notify: true,
-                 reflectToAttribute: true,
-                 observer: '_isSelectedChanged'
+               index:{
+                   type:Number,
+                   reflectToAttribute: true
                },
-               isBottom:{
-                 type:Boolean,
-                 value:false,
+               topPos:{
+                 type: Number,
                  reflectToAttribute: true
                },
-               isTrackSource:{
+               isSelectable:{
                  type: Boolean,
-                 value: false
+                 value:false,
+                 reflectToAttribute:true
                }
            },
-          //  handleTrack: function(e){
-          //      this._moveSlider(e);
-          //  },
-          //  _moveSlider:function(e){
-          //      var elementPos = $(e.currentTarget).parent().offset();
-          //      var posX = e.detail.x - elementPos.left;
-          //      if(posX >= 0 && posX <= $(e.currentTarget).parent().width()){
-          //          $(e.currentTarget).css('left', posX+'px');
-          //          this.pos = posX;
-          //      }
-          //  },
-           _upChanged:function(newUp){
-               if(newUp)
-                   this.points = "1,9 9,9 5,1";
-
-           },
-           handleTap : function(e){
-             if (!this.isBottom){
-                this.isSelected = !this.isSelected;
-             }
-           },
-           _isSelectedChanged : function () {
-             var _switch = this.$$('.switch');
-            $(_switch).toggleClass("highlighted");
-           }
+           _handleDown: function(e){
+                this._startX = e.detail.x;
+                this.listen(this, 'track', '_handleMove');
+                this.listen(this, 'up', '_handleUp');
+            },
+           _handleMove: function(e){
+               var deltaX = e.detail.x - this._startX;
+               var _children = Polymer.dom(Polymer.dom(this).parentNode).querySelectorAll("slider-switch");
+               for(var i=0;i<_children.length;i++){
+                   if(_children[i].isSelected){
+                       if(!_children[i].isDragging){
+                           _children[i].isDragging = true;
+                        }
+                        var x = _children[i].position;
+                       //if((x + deltaX) >= 0 && (x + deltaX)<= $(e.currentTarget).width())
+                        _children[i].position = x + deltaX;
+                   }
+               }
+               this._startX = e.detail.x;
+            },
+           _handleUp: function(e){
+               var _children = Polymer.dom(Polymer.dom(this).parentNode).querySelectorAll("slider-switch");
+               for(var i=0;i<_children.length;i++){
+                   if(_children[i].isDragging){
+                       _children[i].isDragging = false;
+                   }
+               }
+               this.unlisten(this, 'track', '_handleMove');
+               this.unlisten(this, 'up', '_handleUp');
+            }
        });
   </script>
 </dom-module>
