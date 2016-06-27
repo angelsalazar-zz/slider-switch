@@ -20,12 +20,28 @@
              stroke: #1565C0;
              fill: #1565C0;
          }
-
          .highlighted {
            stroke: #FF9800;
            fill: #FF9800;
          }
+         .highlighted:hover {
+           stroke: #B71C1C;
+           fill: #B71C1C;
+         }
+         .value {
+           position: absolute;
+           background-color: #7CADAD;
+           color: #EEEEEE;
+           padding: 3px;
+           width: auto;
+           height: auto;
+           margin-left: -12px;
+           font: 11px arial, sans-serif;
+           border: .5px solid;
+           border-radius: 10px;
+         }
     </style>
+    <div class="value" style$="left:{{position}}px; display:{{visibility}}; top:{{topPos}}px">{{position}}</div>
     <svg class$="switch {{class}}" style$="left:{{position}}px">
         <polygon points$="{{points}}" />
     </svg>
@@ -41,7 +57,8 @@
                position: {
                    type: Number,
                    value: 0,
-                   reflectToAttribute: true
+                   reflectToAttribute: true,
+                   notify: true
                },
                isDragging: {
                     type: Boolean,
@@ -60,6 +77,15 @@
                index:{
                    type:Number,
                    reflectToAttribute: true
+               },
+               topPos:{
+                 type: Number,
+                 reflectToAttribute: true
+               },
+               isSelectable:{
+                 type: Boolean,
+                 value:false,
+                 reflectToAttribute:true
                }
            },
            _handleDown: function(e){
@@ -95,4 +121,3 @@
        });
   </script>
 </dom-module>
-
