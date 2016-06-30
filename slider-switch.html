@@ -63,7 +63,8 @@
                isDragging: {
                     type: Boolean,
                     value: false,
-                    reflectToAttribute: true
+                    reflectToAttribute: true,
+                    observer: "_displayText"
                 },
                isSelected: {
                    type: Boolean,
@@ -92,18 +93,32 @@
                 this._startX = e.detail.x;
                 this.listen(this, 'track', '_handleMove');
                 this.listen(this, 'up', '_handleUp');
+                this.visibility = "block";
             },
            _handleMove: function(e){
                var deltaX = e.detail.x - this._startX;
-               var _children = Polymer.dom(Polymer.dom(this).parentNode).querySelectorAll("slider-switch");
+               var _parent = Polymer.dom(this).parentNode;
+               var _children = Polymer.dom(_parent).querySelectorAll("slider-switch");
                for(var i=0;i<_children.length;i++){
                    if(_children[i].isSelected){
                        if(!_children[i].isDragging){
                            _children[i].isDragging = true;
                         }
-                        var x = _children[i].position;
-                       //if((x + deltaX) >= 0 && (x + deltaX)<= $(e.currentTarget).width())
-                        _children[i].position = x + deltaX;
+                        var newPosition = _children[i].position + deltaX;
+                        if(newPosition >= 0 && newPosition <= _parent.getBoundingClientRect().width){
+                            if(!_parent.hasReachedMaxLimit && !_parent.hasReachedMinLimit){
+                                _children[i].position = newPosition;
+                                _parent.checkLimitReached(_children[i].position);
+                            }
+                            if(_parent.hasReachedMaxLimit && (deltaX < 0)){
+                                _children[i].position = newPosition;
+                                _parent.checkLimitReached(_children[i].position);
+                            }
+                            if(_parent.hasReachedMinLimit && (deltaX > 0)){
+                                _children[i].position = newPosition;
+                                _parent.checkLimitReached(_children[i].position);
+                            }
+                        }
                    }
                }
                this._startX = e.detail.x;
@@ -115,8 +130,17 @@
                        _children[i].isDragging = false;
                    }
                }
+               this.visibility = "none";
                this.unlisten(this, 'track', '_handleMove');
                this.unlisten(this, 'up', '_handleUp');
+            },
+            _displayText:function(value){
+              if(value){
+                this.visibility = "block";
+              } else {
+                this.visibility = "none";
+
+              }
             }
        });
   </script>

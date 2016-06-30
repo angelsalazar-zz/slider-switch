@@ -9,10 +9,6 @@
                 type: Boolean,
                 observer: '_upChanged'
             },
-            upMultiplier:{ // When true =1, false = -1
-                type: Number,
-                value: -20
-            },
             points: {
                 type: String,
                 value: "1,1 9,1 5,9"
@@ -26,7 +22,6 @@
             mousedown: '_handleSelected'
         },
         _handleSelected:function(e){
-          if(this.isSelectable){
               if(this.isSelected){
                   if(e.ctrlKey){
                       this.isSelected = false;
@@ -44,15 +39,15 @@
                     }
                   }
                   this.isSelected = true;
-                  this.class = 'highlighted';
+                  if(this.isSelectable){
+                      this.class = 'highlighted';
+                  }
                   this.visibility = "block";
               }
-          }
         },
         _upChanged:function(isUp){
             if(isUp)
                 this.points = "1,9 9,9 5,1";
-                this.upMultiplier = 20;
         },
     };
 </script>
