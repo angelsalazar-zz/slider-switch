@@ -90,12 +90,14 @@
                }
            },
            _handleDown: function(e){
-                this._startX = e.detail.x;
-                this.listen(this, 'track', '_handleMove');
-                this.listen(this, 'up', '_handleUp');
-                this.visibility = "block";
+               e.preventDefault();
+               this._startX = e.detail.x;
+               this.listen(this, 'track', '_handleMove');
+               this.listen(this, 'up', '_handleUp');
+               this.visibility = "block";
             },
            _handleMove: function(e){
+               e.preventDefault();
                var deltaX = e.detail.x - this._startX;
                var _parent = Polymer.dom(this).parentNode;
                var _children = Polymer.dom(_parent).querySelectorAll("slider-switch");
@@ -124,6 +126,7 @@
                this._startX = e.detail.x;
             },
            _handleUp: function(e){
+               e.preventDefault();
                var _children = Polymer.dom(Polymer.dom(this).parentNode).querySelectorAll("slider-switch");
                for(var i=0;i<_children.length;i++){
                    if(_children[i].isDragging){
