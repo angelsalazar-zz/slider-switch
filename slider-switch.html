@@ -41,8 +41,11 @@
            border-radius: 10px;
          }
     </style>
-    <div class="value" style$="left:{{position}}px; display:{{visibility}}; top:{{topPos}}px">{{position}}</div>
-    <svg class$="switch {{class}}" style$="left:{{position}}px">
+    <div class="value"
+        style$="left:{{position}}px; display:{{visibility}}; top:{{topPos}}px">
+        {{value}}</div>
+    <svg class$="switch {{class}}"
+        style$="left:{{position}}px">
         <polygon points$="{{points}}" />
     </svg>
   </template>
@@ -87,8 +90,22 @@
                  type: Boolean,
                  value:false,
                  reflectToAttribute:true
-               }
+               },
+               value: {
+                  type:Number,
+                  notify:true,
+                  reflectToAttribute:true
+                },
            },
+           attached:function(){
+              var _zone = Polymer.dom(this).parentNode;
+              this.position = Math.round((this.value*_zone.getBoundingClientRect().width)/(_zone.maxValue));
+            },
+            _updateValueAndPosition(newPosition){
+              this.position = newPosition;
+              var _zone = Polymer.dom(this).parentNode;
+              this.value = Math.round((newPosition*(_zone.maxValue))/(_zone.getBoundingClientRect().width));
+            },
            _handleDown: function(e){
                e.preventDefault();
                this._startX = e.detail.x;
@@ -109,17 +126,18 @@
                         var newPosition = _children[i].position + deltaX;
                         if(newPosition >= 0 && newPosition <= _parent.getBoundingClientRect().width){
                             if(!_parent.hasReachedMaxLimit && !_parent.hasReachedMinLimit){
-                                _children[i].position = newPosition;
-                                _parent.checkLimitReached(_children[i].position);
+                                _children[i]._updateValueAndPosition(newPosition);
+                                _parent.checkLimitReached(newPosition);
                             }
                             if(_parent.hasReachedMaxLimit && (deltaX < 0)){
-                                _children[i].position = newPosition;
-                                _parent.checkLimitReached(_children[i].position);
+                                _children[i]._updateValueAndPosition(newPosition);
+                                _parent.checkLimitReached(newPosition);
                             }
                             if(_parent.hasReachedMinLimit && (deltaX > 0)){
-                                _children[i].position = newPosition;
-                                _parent.checkLimitReached(_children[i].position);
+                                _children[i]._updateValueAndPosition(newPosition);
+                                _parent.checkLimitReached(newPosition);
                             }
+
                         }
                    }
                }
