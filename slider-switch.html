@@ -7,6 +7,22 @@
          :host {
              display: block;
          }
+         /* Hover when it's not selected, check for hover property */
+         :host[hover] > .switch{
+           stroke: #1565C0;
+           fill: #1565C0;
+         }
+         /* when selected, check for is-selected property  */
+         :host[is-selected] > .switch{
+           stroke: #FF9800;
+           fill: #FF9800;
+         }
+         /* Hover when it's selected, check for hover and is-selected property */
+         :host[is-selected][hover] > .switch{
+           stroke: #B71C1C;
+           fill: #B71C1C;
+         }
+         /* svg style */
          .switch{
              position: absolute;
              margin-left: -5px;
@@ -16,18 +32,7 @@
              stroke-width: 2;
              fill: #90CAF9;
          }
-         .switch:hover{
-             stroke: #1565C0;
-             fill: #1565C0;
-         }
-         .highlighted {
-           stroke: #FF9800;
-           fill: #FF9800;
-         }
-         .highlighted:hover {
-           stroke: #B71C1C;
-           fill: #B71C1C;
-         }
+         /* popup value style */
          .value {
            position: absolute;
            background-color: #7CADAD;
@@ -44,23 +49,39 @@
     <div class="value"
         style$="left:{{position}}px; display:{{visibility}}; top:{{topPos}}px">
         {{value}}</div>
-    <svg class$="switch {{class}}"
-        style$="left:{{position}}px">
+    <svg class="switch"
+         style$="left:{{position}}px">
         <polygon points$="{{points}}" />
     </svg>
   </template>
    <script>
        Polymer({
+           //custom element name
            is: 'slider-switch',
+           //custom behavior (select and hover behavior)
            behaviors: [HighlightBehavior],
+           /*
+           listeners
+           down (mousedown)
+           _handleDown callback
+           */
            listeners: {
                down: '_handleDown'
            },
+           /*
+            Properties
+            position:Number - Current slider-switch position (pixeles),
+            isDragging:Boolean - Active when dragging the slider-switch (shows popup value on dragging),
+            isSelected:Boolean - ,
+            _startX:Number - Private prop, helper used to store where the drag event start
+            _topPos: Number - style variable for popup value
+            isSelectable:Boolean - Allow slider-switch to be selectable component or not
+            value:Number - Current slider-value
+           */
            properties:{
                position: {
                    type: Number,
                    value: 0,
-                   reflectToAttribute: true,
                    notify: true
                },
                isDragging: {
@@ -97,15 +118,27 @@
                   reflectToAttribute:true
                 },
            },
+           /**
+           * attached callback, set the position based on a value
+           *
+           */
            attached:function(){
               var _zone = Polymer.dom(this).parentNode;
               this.position = Math.round((this.value*_zone.getBoundingClientRect().width)/(_zone.maxValue));
             },
+            /**
+            * _updateValueAndPosition, compute the value based on a position
+            * @param {Number} newPosition
+            */
             _updateValueAndPosition(newPosition){
               this.position = newPosition;
               var _zone = Polymer.dom(this).parentNode;
               this.value = Math.round((newPosition*(_zone.maxValue))/(_zone.getBoundingClientRect().width));
             },
+            /**
+            * _handleDown, Start the multi drag event
+            * @param {event} e
+            */
            _handleDown: function(e){
                e.preventDefault();
                this._startX = e.detail.x;
@@ -113,6 +146,10 @@
                this.listen(this, 'up', '_handleUp');
                this.visibility = "block";
             },
+            /**
+            * _handleMove, multi drag event
+            * @param {event} e
+            */
            _handleMove: function(e){
                e.preventDefault();
                var deltaX = e.detail.x - this._startX;
@@ -143,6 +180,10 @@
                }
                this._startX = e.detail.x;
             },
+            /**
+            * _handleUp, Finish multi drag event
+            * @param {event} e
+            */
            _handleUp: function(e){
                e.preventDefault();
                var _children = Polymer.dom(Polymer.dom(this).parentNode).querySelectorAll("slider-switch");
@@ -155,6 +196,10 @@
                this.unlisten(this, 'track', '_handleMove');
                this.unlisten(this, 'up', '_handleUp');
             },
+            /**
+            * _displayText, show the current value
+            * @param {Number} value
+            */
             _displayText:function(value){
               if(value){
                 this.visibility = "block";

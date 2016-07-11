@@ -1,10 +1,14 @@
 <script>
+    /* Custom behavior  */
     HighlightBehavior = {
+      //Properties
+      /*
+       up:Boolean - Change slider's orientation
+       points:String -   svg figure
+       visibility:String - Manage whenever the value should be shown
+       hover:Boolean - Shows when slider-switch is hovered
+      */
         properties: {
-            class:{
-                type: String,
-                value: ''
-            },
             up:{
                 type: Boolean,
                 observer: '_upChanged'
@@ -16,11 +20,29 @@
             visibility :{
               type: String,
               value: "none"
+            },
+            hover:{
+              type:Boolean,
+              value:false,
+              reflectToAttribute: true,
+              notify:true
             }
         },
+        /*
+        listeners
+        mousedown: _handleSelected,
+        mouseenter: '_addHighlight',
+        mouseleave: '_removeHighlight'
+        */
         listeners: {
-            mousedown: '_handleSelected'
+            mousedown: '_handleSelected',
+            mouseenter: '_addHighlight',
+            mouseleave: '_removeHighlight'
         },
+        /**
+        * _handleSelected, Manage the selection functionality
+        * @param {event} e
+        */
         _handleSelected:function(e){
               if(this.isSelected){
                   if(e.ctrlKey){
@@ -39,15 +61,30 @@
                     }
                   }
                   this.isSelected = true;
-                  if(this.isSelectable){
-                      this.class = 'highlighted';
-                  }
                   this.visibility = "block";
               }
         },
+        /**
+        * _upChanged, Manage the slider-switch's orientation
+        * @param {event} e
+        */
         _upChanged:function(isUp){
             if(isUp)
                 this.points = "1,9 9,9 5,1";
         },
+        /**
+        * _addHighlight, set true the hover property when the mouse is over the slider-switch
+        * @param {event} e
+        */
+        _addHighlight:function(e){
+          this.hover = true;
+        },
+        /**
+        * _removeHighlight, set false the hover property when the mouse isn't over the slider-switch
+        * @param {event} e
+        */
+        _removeHighlight:function(e){
+          this.hover = false;
+        }
     };
 </script>
