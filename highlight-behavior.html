@@ -47,7 +47,6 @@
               if(this.isSelected){
                   if(e.ctrlKey){
                       this.isSelected = false;
-                      this.class = '';
                       this.visibility = "none";
                   }
               }else{
@@ -56,7 +55,6 @@
                       for (var i = 0; i < _children.length; i++) {
                           if( _children[i].isSelected === true){
                               _children[i].isSelected = false;
-                              _children[i].class = '';
                           }
                     }
                   }
