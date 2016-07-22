@@ -50,7 +50,7 @@
         style$="left:{{position}}px; display:{{visibility}}; top:{{topPos}}px">
         {{value}}</div>
     <svg class="switch"
-         style$="left:{{position}}px">
+         style$="left:{{position}}px;z-index:{{index}}">
         <polygon points$="{{points}}" />
     </svg>
   </template>
@@ -66,7 +66,7 @@
            _handleDown callback
            */
            listeners: {
-               down: '_handleDown'
+               mousedown: '_handleDown'
            },
            /*
             Properties
@@ -93,7 +93,8 @@
                isSelected: {
                    type: Boolean,
                    value: false,
-                   reflectToAttribute: true
+                   reflectToAttribute: true,
+                   observer: "_setIndex"
                },
                _startX:{
                    type: Number,
@@ -141,10 +142,11 @@
             */
            _handleDown: function(e){
                e.preventDefault();
-               this._startX = e.detail.x;
-               this.listen(this, 'track', '_handleMove');
-               this.listen(this, 'up', '_handleUp');
+               this._startX = e.pageX;
+               this.listen(this, 'mousemove', '_handleMove');
+               this.listen(this, 'mouseup', '_handleUp');
                this.visibility = "block";
+               e.stopPropagation();
             },
             /**
             * _handleMove, multi drag event
@@ -152,7 +154,7 @@
             */
            _handleMove: function(e){
                e.preventDefault();
-               var deltaX = e.detail.x - this._startX;
+              var deltaX = e.pageX - this._startX;
                var _parent = Polymer.dom(this).parentNode;
                var _children = Polymer.dom(_parent).querySelectorAll("slider-switch");
                for(var i=0;i<_children.length;i++){
@@ -178,7 +180,8 @@
                         }
                    }
                }
-               this._startX = e.detail.x;
+               this._startX = e.pageX;
+               e.stopPropagation();
             },
             /**
             * _handleUp, Finish multi drag event
@@ -193,8 +196,9 @@
                    }
                }
                this.visibility = "none";
-               this.unlisten(this, 'track', '_handleMove');
-               this.unlisten(this, 'up', '_handleUp');
+               this.unlisten(this, 'mousemove', '_handleMove');
+               this.unlisten(this, 'mouseup', '_handleUp');
+               e.stopPropagation();
             },
             /**
             * _displayText, show the current value
@@ -207,6 +211,13 @@
                 this.visibility = "none";
 
               }
+            },
+            _setIndex:function(selected){
+              // console.log('selected current value '+ selected);
+              if(selected)
+                this.index = 99;
+              else
+                this.index = 0;
             }
        });
   </script>
