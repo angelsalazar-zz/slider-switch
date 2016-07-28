@@ -8,17 +8,17 @@
              display: block;
          }
          /* Hover when it's not selected, check for hover property */
-         :host[hover] > .switch{
+         :host[selecting] > .switch{
            stroke: #1565C0;
            fill: #1565C0;
          }
          /* when selected, check for is-selected property  */
-         :host[is-selected] > .switch{
+         :host[selected] > .switch{
            stroke: #FF9800;
            fill: #FF9800;
          }
          /* Hover when it's selected, check for hover and is-selected property */
-         :host[is-selected][hover] > .switch{
+         :host[selected][selecting] > .switch{
            stroke: #B71C1C;
            fill: #B71C1C;
          }
@@ -50,7 +50,7 @@
         style$="left:{{position}}px; display:{{visibility}}; top:{{topPos}}px">
         {{value}}</div>
     <svg class="switch"
-         style$="left:{{position}}px">
+         style$="left:{{position}}px;z-index:{{index}}">
         <polygon points$="{{points}}" />
     </svg>
   </template>
@@ -66,34 +66,35 @@
            _handleDown callback
            */
            listeners: {
-               down: '_handleDown'
+               mousedown: '_handleDown'
            },
            /*
             Properties
             position:Number - Current slider-switch position (pixeles),
-            isDragging:Boolean - Active when dragging the slider-switch (shows popup value on dragging),
-            isSelected:Boolean - ,
+            dragging:Boolean - Active when dragging the slider-switch (shows popup value on dragging),
+            selected:Boolean - ,
             _startX:Number - Private prop, helper used to store where the drag event start
             _topPos: Number - style variable for popup value
-            isSelectable:Boolean - Allow slider-switch to be selectable component or not
+            selectable:Boolean - Allow slider-switch to be selectable component or not
             value:Number - Current slider-value
            */
            properties:{
                position: {
                    type: Number,
-                   value: 0,
-                   notify: true
+                   value: 0
                },
-               isDragging: {
+               dragging: {
                     type: Boolean,
                     value: false,
                     reflectToAttribute: true,
                     observer: "_displayText"
                 },
-               isSelected: {
+               selected: {
                    type: Boolean,
                    value: false,
-                   reflectToAttribute: true
+                   reflectToAttribute: true,
+                   notify:true,
+                   observer: "_setIndex"
                },
                _startX:{
                    type: Number,
@@ -105,9 +106,9 @@
                },
                topPos:{
                  type: Number,
-                 reflectToAttribute: true
+                 value:-20
                },
-               isSelectable:{
+               selectable:{
                  type: Boolean,
                  value:false,
                  reflectToAttribute:true
@@ -141,10 +142,11 @@
             */
            _handleDown: function(e){
                e.preventDefault();
-               this._startX = e.detail.x;
-               this.listen(this, 'track', '_handleMove');
-               this.listen(this, 'up', '_handleUp');
+               this._startX = e.pageX;
+               this.listen(this, 'mousemove', '_handleMove');
+               this.listen(this, 'mouseup', '_handleUp');
                this.visibility = "block";
+               e.stopPropagation();
             },
             /**
             * _handleMove, multi drag event
@@ -152,13 +154,13 @@
             */
            _handleMove: function(e){
                e.preventDefault();
-               var deltaX = e.detail.x - this._startX;
+              var deltaX = e.pageX - this._startX;
                var _parent = Polymer.dom(this).parentNode;
                var _children = Polymer.dom(_parent).querySelectorAll("slider-switch");
                for(var i=0;i<_children.length;i++){
-                   if(_children[i].isSelected){
-                       if(!_children[i].isDragging){
-                           _children[i].isDragging = true;
+                   if(_children[i].selected){
+                       if(!_children[i].dragging){
+                           _children[i].dragging = true;
                         }
                         var newPosition = _children[i].position + deltaX;
                         if(newPosition >= 0 && newPosition <= _parent.getBoundingClientRect().width){
@@ -178,7 +180,8 @@
                         }
                    }
                }
-               this._startX = e.detail.x;
+               this._startX = e.pageX;
+               e.stopPropagation();
             },
             /**
             * _handleUp, Finish multi drag event
@@ -188,13 +191,14 @@
                e.preventDefault();
                var _children = Polymer.dom(Polymer.dom(this).parentNode).querySelectorAll("slider-switch");
                for(var i=0;i<_children.length;i++){
-                   if(_children[i].isDragging){
-                       _children[i].isDragging = false;
+                   if(_children[i].dragging){
+                       _children[i].dragging = false;
                    }
                }
                this.visibility = "none";
-               this.unlisten(this, 'track', '_handleMove');
-               this.unlisten(this, 'up', '_handleUp');
+               this.unlisten(this, 'mousemove', '_handleMove');
+               this.unlisten(this, 'mouseup', '_handleUp');
+               e.stopPropagation();
             },
             /**
             * _displayText, show the current value
@@ -207,6 +211,12 @@
                 this.visibility = "none";
 
               }
+            },
+            _setIndex:function(selected){
+              if(selected)
+                this.index = 99;
+              else
+                this.index = 0;
             }
        });
   </script>
