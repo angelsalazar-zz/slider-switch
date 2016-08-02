@@ -8,17 +8,17 @@
              display: block;
          }
          /* Hover when it's not selected, check for hover property */
-         :host[hover] > .switch{
+         :host[selecting] > .switch{
            stroke: #1565C0;
            fill: #1565C0;
          }
          /* when selected, check for is-selected property  */
-         :host[is-selected] > .switch{
+         :host[selected] > .switch{
            stroke: #FF9800;
            fill: #FF9800;
          }
          /* Hover when it's selected, check for hover and is-selected property */
-         :host[is-selected][hover] > .switch{
+         :host[selected][selecting] > .switch{
            stroke: #B71C1C;
            fill: #B71C1C;
          }
@@ -71,29 +71,29 @@
            /*
             Properties
             position:Number - Current slider-switch position (pixeles),
-            isDragging:Boolean - Active when dragging the slider-switch (shows popup value on dragging),
-            isSelected:Boolean - ,
+            dragging:Boolean - Active when dragging the slider-switch (shows popup value on dragging),
+            selected:Boolean - ,
             _startX:Number - Private prop, helper used to store where the drag event start
             _topPos: Number - style variable for popup value
-            isSelectable:Boolean - Allow slider-switch to be selectable component or not
+            selectable:Boolean - Allow slider-switch to be selectable component or not
             value:Number - Current slider-value
            */
            properties:{
                position: {
                    type: Number,
-                   value: 0,
-                   notify: true
+                   value: 0
                },
-               isDragging: {
+               dragging: {
                     type: Boolean,
                     value: false,
                     reflectToAttribute: true,
                     observer: "_displayText"
                 },
-               isSelected: {
+               selected: {
                    type: Boolean,
                    value: false,
                    reflectToAttribute: true,
+                   notify:true,
                    observer: "_setIndex"
                },
                _startX:{
@@ -106,9 +106,9 @@
                },
                topPos:{
                  type: Number,
-                 reflectToAttribute: true
+                 value:-20
                },
-               isSelectable:{
+               selectable:{
                  type: Boolean,
                  value:false,
                  reflectToAttribute:true
@@ -158,9 +158,9 @@
                var _parent = Polymer.dom(this).parentNode;
                var _children = Polymer.dom(_parent).querySelectorAll("slider-switch");
                for(var i=0;i<_children.length;i++){
-                   if(_children[i].isSelected){
-                       if(!_children[i].isDragging){
-                           _children[i].isDragging = true;
+                   if(_children[i].selected){
+                       if(!_children[i].dragging){
+                           _children[i].dragging = true;
                         }
                         var newPosition = _children[i].position + deltaX;
                         if(newPosition >= 0 && newPosition <= _parent.getBoundingClientRect().width){
@@ -191,8 +191,8 @@
                e.preventDefault();
                var _children = Polymer.dom(Polymer.dom(this).parentNode).querySelectorAll("slider-switch");
                for(var i=0;i<_children.length;i++){
-                   if(_children[i].isDragging){
-                       _children[i].isDragging = false;
+                   if(_children[i].dragging){
+                       _children[i].dragging = false;
                    }
                }
                this.visibility = "none";
@@ -213,11 +213,13 @@
               }
             },
             _setIndex:function(selected){
-              // console.log('selected current value '+ selected);
-              if(selected)
+              if(selected){
+                this.visibility = "block";
                 this.index = 99;
-              else
+              }else{
                 this.index = 0;
+                this.visibility = "none";
+              }
             }
        });
   </script>

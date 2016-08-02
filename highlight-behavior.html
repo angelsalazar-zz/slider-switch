@@ -6,7 +6,7 @@
        up:Boolean - Change slider's orientation
        points:String -   svg figure
        visibility:String - Manage whenever the value should be shown
-       hover:Boolean - Shows when slider-switch is hovered
+       selecting:Boolean - Shows when slider-switch is hovered
       */
         properties: {
             up:{
@@ -21,10 +21,11 @@
               type: String,
               value: "none"
             },
-            hover:{
+            selecting:{
               type:Boolean,
               value:false,
               reflectToAttribute: true,
+              observer: '_selectingIndex',
               notify:true
             },
             index:{
@@ -48,45 +49,52 @@
         * @param {event} e
         */
         _handleSelected:function(e){
-              if(this.isSelected){
-                  if(e.ctrlKey){
-                      this.isSelected = false;
-                      this.visibility = "none";
-                  }
-              }else{
-                  if(!e.ctrlKey){
-                      var _children = Polymer.dom(Polymer.dom(this).parentNode).querySelectorAll("slider-switch");
-                      for (var i = 0; i < _children.length; i++) {
-                          if( _children[i].isSelected === true){
-                              _children[i].isSelected = false;
-                          }
-                    }
-                  }
-                  this.isSelected = true;
-                  this.visibility = "block";
+          if(this.selected){
+              if(e.ctrlKey){
+                  this.set('selected',false);
               }
+          }else{
+              if(!e.ctrlKey){
+                  var _children = Polymer.dom(Polymer.dom(this).parentNode).querySelectorAll("slider-switch");
+                  for (var i = 0; i < _children.length; i++) {
+                      if(_children[i].selected){
+                          _children[i].set('selected',false);
+                      }
+                }
+              }
+              this.set('selected',true);
+          }
         },
         /**
         * _upChanged, Manage the slider-switch's orientation
-        * @param {event} e
+        * @param {Boolean} isUp
         */
         _upChanged:function(isUp){
-            if(isUp)
-                this.points = "1,9 9,9 5,1";
+            if(isUp){
+              this.points = "1,9 9,9 5,1";
+              this.topPos = 12;
+            }
+
         },
         /**
-        * _addHighlight, set true the hover property when the mouse is over the slider-switch
+        * _addHighlight, set true the selecting property when the mouse is over the slider-switch
         * @param {event} e
         */
         _addHighlight:function(e){
-          this.hover = true;
+          this.set('selecting',true);
         },
         /**
-        * _removeHighlight, set false the hover property when the mouse isn't over the slider-switch
+        * _removeHighlight, set false the selecting property when the mouse isn't over the slider-switch
         * @param {event} e
         */
         _removeHighlight:function(e){
-          this.hover = false;
+          this.set('selecting',false);
+        },
+        _selectingIndex:function(selecting){
+          if(selecting)
+            this.index = 99;
+          else
+            this.index = 0;
         }
     };
 </script>
