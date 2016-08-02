@@ -92,9 +92,16 @@
                selected: {
                    type: Boolean,
                    value: false,
+                   observer: "_setIndexOnSelected",
                    reflectToAttribute: true,
-                   notify:true,
-                   observer: "_setIndex"
+                   notify:true
+               },
+               selecting:{
+                 type:Boolean,
+                 value:false,
+                 observer: "_setIndexOnSelecting",
+                 reflectToAttribute: true,
+                 notify:true
                },
                _startX:{
                    type: Number,
@@ -119,6 +126,7 @@
                   reflectToAttribute:true
                 },
            },
+
            /**
            * attached callback, set the position based on a value
            *
@@ -209,16 +217,20 @@
                 this.visibility = "block";
               } else {
                 this.visibility = "none";
-
               }
             },
-            _setIndex:function(selected){
+            _setIndexOnSelected:function(selected){
               if(selected){
-                this.visibility = "block";
-                this.index = 99;
+                this.index = 99
               }else{
                 this.index = 0;
-                this.visibility = "none";
+              }
+            },
+            _setIndexOnSelecting:function(selecting){
+              if(selecting || this.selected){
+                this.index = 99
+              }else{
+                this.index = 0;
               }
             }
        });

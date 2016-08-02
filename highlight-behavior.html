@@ -21,13 +21,6 @@
               type: String,
               value: "none"
             },
-            selecting:{
-              type:Boolean,
-              value:false,
-              reflectToAttribute: true,
-              observer: '_selectingIndex',
-              notify:true
-            },
             index:{
               type:Number,
               value:0
@@ -49,10 +42,10 @@
         * @param {event} e
         */
         _handleSelected:function(e){
-<<<<<<< HEAD
           if(this.selected){
               if(e.ctrlKey){
                   this.set('selected',false);
+                  this.visibility = "block";
               }
           }else{
               if(!e.ctrlKey){
@@ -64,6 +57,7 @@
                 }
               }
               this.set('selected',true);
+              this.visibility = "none";
           }
         },
         /**
@@ -90,12 +84,6 @@
         */
         _removeHighlight:function(e){
           this.set('selecting',false);
-        },
-        _selectingIndex:function(selecting){
-          if(selecting)
-            this.index = 99;
-          else
-            this.index = 0;
         }
     };
 </script>
